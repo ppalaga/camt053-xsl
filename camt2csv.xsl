@@ -16,18 +16,26 @@
 </xsl:template>
 
 <xsl:template match="/*[local-name() = 'Document']/*[local-name() = 'BkToCstmrStmt']/*[local-name() = 'Stmt']">
-<xsl:for-each select="*[local-name() = 'Ntry']">
-<xsl:variable name="AddtlNtryInf" select="*[local-name() = 'AddtlNtryInf']" />
-<xsl:variable name="Ustrd" select="*[local-name() = 'NtryDtls']/*[local-name() = 'TxDtls']/*[local-name() = 'RmtInf']/*[local-name() = 'Ustrd']" />
 
-<xsl:variable name="desc1">
+<xsl:for-each select="*[local-name() = 'Ntry']/*[local-name() = 'NtryDtls']/*[local-name() = 'TxDtls']">
+<xsl:variable name="AddtlNtryInf" select="*[local-name() = 'AddtlTxInf']/text()" />
+<xsl:variable name="desc0">
   <xsl:choose>
-    <xsl:when test="$Ustrd = substring($AddtlNtryInf, string-length($AddtlNtryInf) - string-length($Ustrd) +1)"><xsl:value-of select="$AddtlNtryInf"/></xsl:when>
-    <xsl:otherwise><xsl:value-of select="$AddtlNtryInf"/><xsl:text> </xsl:text><xsl:value-of select="$Ustrd"/></xsl:otherwise>
+    <xsl:when test="$AddtlNtryInf"><xsl:value-of select="$AddtlNtryInf"/></xsl:when>
+    <xsl:otherwise><xsl:value-of select="../../*[local-name() = 'AddtlNtryInf']/text()"/></xsl:otherwise>
   </xsl:choose>
 </xsl:variable>
 
-<xsl:variable name="CdtrNm" select="*[local-name() = 'NtryDtls']/*[local-name() = 'TxDtls']/*[local-name() = 'RltdPties']/*[local-name() = 'Cdtr']/*[local-name() = 'Nm']" />
+<xsl:variable name="Ustrd" select="*[local-name() = 'RmtInf']/*[local-name() = 'Ustrd']/text()" />
+
+<xsl:variable name="desc1">
+  <xsl:choose>
+    <xsl:when test="$Ustrd = substring($desc0, string-length($desc0) - string-length($Ustrd) +1)"><xsl:value-of select="$desc0"/></xsl:when>
+    <xsl:otherwise><xsl:value-of select="$desc0"/><xsl:text> </xsl:text><xsl:value-of select="$Ustrd"/></xsl:otherwise>
+  </xsl:choose>
+</xsl:variable>
+
+<xsl:variable name="CdtrNm" select="*[local-name() = 'RltdPties']/*[local-name() = 'Cdtr']/*[local-name() = 'Nm']/text()" />
 <xsl:variable name="desc2">
   <xsl:choose>
     <xsl:when test="$CdtrNm != 'NOTPROVIDED' and $CdtrNm != 'Peter Palaga'"><xsl:value-of select="$desc1"/><xsl:text> </xsl:text><xsl:value-of select="$CdtrNm"/></xsl:when>
@@ -35,21 +43,25 @@
   </xsl:choose>
 </xsl:variable>
 
-<xsl:variable name="DbtrNm" select="*[local-name() = 'NtryDtls']/*[local-name() = 'TxDtls']/*[local-name() = 'RltdPties']/*[local-name() = 'Dbtr']/*[local-name() = 'Nm']" />
+<xsl:variable name="DbtrNm" select="*[local-name() = 'RltdPties']/*[local-name() = 'Dbtr']/*[local-name() = 'Nm']/text()" />
 <xsl:variable name="desc3">
   <xsl:choose>
     <xsl:when test="$DbtrNm != 'NOTPROVIDED' and $DbtrNm != 'Peter Palaga'"><xsl:value-of select="$desc2"/><xsl:text> </xsl:text><xsl:value-of select="$DbtrNm"/></xsl:when>
     <xsl:otherwise><xsl:value-of select="$desc2"/></xsl:otherwise>
   </xsl:choose>
 </xsl:variable>
+<xsl:variable name="Amt" select="*[local-name() = 'Amt']/text()" />
 
-<xsl:value-of
-    select="*[local-name() = 'BookgDt']/*[local-name() = 'Dt']"/>,<xsl:value-of
-    select="*[local-name() = 'ValDt']/*[local-name() = 'Dt']"/>,"<xsl:value-of
-    select="$desc3"/>",<xsl:if
-    test="*[local-name() = 'CdtDbtInd'] != 'CRDT'">-</xsl:if><xsl:value-of
-    select="*[local-name() = 'Amt']"/>,"<xsl:value-of
-    select="*[local-name() = 'Amt']/@Ccy"/>"<xsl:text>&#xD;&#xA;</xsl:text>
+<xsl:choose>
+  <xsl:when test="$desc3 != 'Belastung LSV  Viseca Payment Services SA' and $desc3 != 'Vergütung Lenkinych 5000 CHF' and $desc3 != 'Übertrag' and $Amt != '4865'">
+    <xsl:value-of
+        select="../../*[local-name() = 'BookgDt']/*[local-name() = 'Dt']"/>,"<xsl:value-of
+        select="$desc3"/>",<xsl:if
+        test="*[local-name() = 'CdtDbtInd'] != 'CRDT'">-</xsl:if><xsl:value-of
+        select="$Amt"/>,"<xsl:value-of
+        select="*[local-name() = 'Amt']/@Ccy"/>"<xsl:text>&#xD;&#xA;</xsl:text>
+  </xsl:when>
+</xsl:choose>
 </xsl:for-each>
 </xsl:template>
 
