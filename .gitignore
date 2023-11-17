@@ -1,1 +1,8 @@
 /.project
+
+# ignore CAMT053 input files
+*.xml
+
+# ignore output files
+*.pdf
+*.csv
